@@ -59,7 +59,7 @@ class BasicPageViews(LiveServerTestCase):
         self.make_models()
         sf_to_follow = "C10H10O10" #todo: get this from a link tag?
         response = sf_detail(HttpRequest,sf_to_follow)
-        self.assertIn('C7H8O9', response.content.decode())
+        self.assertIn(sf_to_follow, response.content.decode())
         self.assertIn('Molecule 2', response.content.decode())
         self.assertIn('Molecule 3', response.content.decode())
 

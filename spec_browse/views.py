@@ -12,6 +12,5 @@ def mol_detail(request,pk):
     return render(request, 'spec_browse/mol_detail.html', {'mol': mol})
 
 def sf_detail(request,pk):
-    print pk
     obj = get_object_or_404(SumFormula,pk=pk)
     return render(request, 'spec_browse/sf_detail.html', {'sf': obj})
