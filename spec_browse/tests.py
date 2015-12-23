@@ -20,21 +20,20 @@ from django.core.exceptions import ValidationError
 
 class MoleculeModelTest(TestCase):
     def test_saving_and_returning_molecule(self):
-        first_item = Molecules()
-        first_item.name = "my first molecule"
-        first_item.save()
-        first_item = Molecules()
-        first_item.name = "out of nowhere... another molecule"
-        first_item.save()
-
+        Molecules(name = "my first molecule").save()
+        Molecules(name = "out of nowhere... another molecule").save()
         saved_items = Molecules.objects.all()
         self.assertEqual(saved_items.count(),2)
-
         first_saved_item = saved_items[0]
         self.assertEqual(first_saved_item.name,"my first molecule")
         second_saved_item = saved_items[1]
         self.assertEqual(second_saved_item.name,"out of nowhere... another molecule")
 
+    def test_saving_molecule_with_formula(self):
+        third_molecule = Molecules(name='another molecule', formula = SumFormula(formula="C7H8O9").save())
+        third_molecule.save()
+        self.assertEqual(Molecules.objects.all().count(),1)
+        self.assertEqual(SumFormula.objects.all().count(),1)
 
 class SumFormulaModelTest(TestCase):
     def test_saving_and_returning_molecule(self):
