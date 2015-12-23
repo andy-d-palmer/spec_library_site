@@ -17,8 +17,8 @@ class SumFormula(models.Model):
         self.validate_unique()
         super(SumFormula, self).save(*args, **kwargs)
 
-#    def __str__(self):
-#        self.formula
+    def __str__(self):
+        return self.formula
 
 
 # Create your models here.
