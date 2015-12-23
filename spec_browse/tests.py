@@ -46,7 +46,7 @@ class SumFormulaModelTest(TestCase):
 
     def test_primary_key(self):
         sf_to_dupliate = "C7H8O9"
-        third_item = SumFormula(formula=sf_to_dupliate,mass=100.)
+        third_item = SumFormula(formula=sf_to_dupliate)
         third_item.save()
         fourth_item = SumFormula(formula=sf_to_dupliate)
         with self.assertRaises(ValidationError):
