@@ -14,9 +14,11 @@ class HomePageTest(TestCase):
         self.assertTrue(response.content.startswith(b"<!DOCTYPE html>"))
         self.assertTrue(response.content.endswith(b"</html>"))
 
-from spec_browse.models import Molecules
-class ItemModelTest(TestCase):
+from spec_browse.models import Molecules, SumFormula
 
+from django.core.exceptions import ValidationError
+
+class MoleculeModelTest(TestCase):
     def test_saving_and_returning_molecule(self):
         first_item = Molecules()
         first_item.name = "my first molecule"
@@ -32,3 +34,23 @@ class ItemModelTest(TestCase):
         self.assertEqual(first_saved_item.name,"my first molecule")
         second_saved_item = saved_items[1]
         self.assertEqual(second_saved_item.name,"out of nowhere... another molecule")
+
+
+class SumFormulaModelTest(TestCase):
+    def test_saving_and_returning_molecule(self):
+        first_item = SumFormula(formula="C1H2O3")
+        first_item.save()
+        second_item = SumFormula(formula="C4H5O6")
+        second_item.save()
+        saved_items = SumFormula.objects.all()
+        self.assertEqual(saved_items.count(),2)
+
+    def test_primary_key(self):
+        sf_to_dupliate = "C7H8O9"
+        third_item = SumFormula(formula=sf_to_dupliate,mass=100.)
+        third_item.save()
+        fourth_item = SumFormula(formula=sf_to_dupliate)
+        with self.assertRaises(ValidationError):
+            fourth_item.save()
+
+
