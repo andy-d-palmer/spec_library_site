@@ -4,8 +4,8 @@ from django.test import LiveServerTestCase
 from django.http import HttpRequest
 from selenium import webdriver
 import unittest
-from spec_browse.views import home_page, mol_detail, sf_detail
-from spec_browse.models import Molecules, SumFormula
+from spec_browse.views import home_page, mol_detail, sf_detail, ion_detail
+from spec_browse.models import Molecules, SumFormula, Ion
 
 class AdminVisitorTest(unittest.TestCase):
     def setUp(self):
@@ -26,9 +26,14 @@ class BasicPageViews(LiveServerTestCase):
         self.browser.implicitly_wait(3)
 
     def make_models(self):
-        Molecules(name = 'Molecule 1', formula = SumFormula(formula="C7H8O9").save()).save()
-        Molecules(name = 'Molecule 2', formula = SumFormula(formula="C10H10O10").save()).save()
-        Molecules(name = 'Molecule 3', formula = SumFormula(formula="C10H10O10")).save()
+        SumFormula(formula="C7H8O9").save()
+        SumFormula(formula="C10H10O10").save()
+        Molecules(name = 'Molecule 1', formula = SumFormula.objects.all().get(formula='C7H8O9')).save()
+        Molecules(name = 'Molecule 2', formula = SumFormula.objects.all().get(formula='C10H10O10')).save()
+        Molecules(name = 'Molecule 3', formula = SumFormula.objects.all().get(formula='C10H10O10')).save()
+        Ion(adduct = '+H',  molecule = Molecules.objects.all().get(name='Molecule 1'), charge = 1).save()
+        Ion(adduct = '+Na', molecule = Molecules.objects.all().get(name='Molecule 1'), charge = 1).save()
+        Ion(adduct = '+K',  molecule = Molecules.objects.all().get(name='Molecule 1'), charge = 1).save()
 
     def tearDown(self):
         self.browser.quit()
@@ -46,7 +51,7 @@ class BasicPageViews(LiveServerTestCase):
         self.assertIn('Molecule 1', response.content.decode())
         self.assertIn('Molecule 2', response.content.decode())
         # check molcules have links
-        url_to_follow = "/detail/mol1" #todo: get this from a link tag?
+        url_to_follow = "/mol/mol1" #todo: get this from a link tag?
         self.assertIn(url_to_follow,response.content.decode())
         # Clicks on a molecule
         # Goes to the detail page for the molecule
@@ -60,9 +65,14 @@ class BasicPageViews(LiveServerTestCase):
         sf_to_follow = "C10H10O10" #todo: get this from a link tag?
         response = sf_detail(HttpRequest,sf_to_follow)
         self.assertIn(sf_to_follow, response.content.decode())
-        self.assertIn('Molecule 2', response.content.decode())
-        self.assertIn('Molecule 3', response.content.decode())
+        self.assertIn('C10H10O10', response.content.decode())
 
+    def test_get_ion(self):
+        self.make_models()
+        pk_to_follow = [str(ion.pk) for ion in Ion.objects.all()][0]
+        response = ion_detail(HttpRequest,pk_to_follow)
+        self.assertIn(pk_to_follow, response.content.decode())
+        self.assertIn('C7H8O9', response.content.decode())
 
 if __name__ == '__main__':
     unittest.main()

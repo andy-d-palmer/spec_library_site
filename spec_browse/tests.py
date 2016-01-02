@@ -14,7 +14,7 @@ class HomePageTest(TestCase):
         self.assertTrue(response.content.startswith(b"<!DOCTYPE html>"))
         self.assertTrue(response.content.endswith(b"</html>"))
 
-from spec_browse.models import Molecules, SumFormula
+from spec_browse.models import Molecules, SumFormula, Ion
 
 from django.core.exceptions import ValidationError
 
@@ -51,5 +51,16 @@ class SumFormulaModelTest(TestCase):
         fourth_item = SumFormula(formula=sf_to_dupliate)
         with self.assertRaises(ValidationError):
             fourth_item.save()
+
+class IonModelTest(TestCase):
+    def test_saving_and_returning_ion(self):
+        mf = "C8H8O9"
+        SumFormula(formula=mf).save()
+        Molecules(name='ion test mol', formula = SumFormula.objects.get(formula=mf)).save()
+        Ion(molecule= Molecules.objects.get(name="ion test mol"),
+                         adduct="+H", charge=1).save()
+        saved_items = Ion.objects.all()
+        self.assertEqual(saved_items.count(),1)
+
 
 

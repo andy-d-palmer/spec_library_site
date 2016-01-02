@@ -1,5 +1,5 @@
 from django.shortcuts import render,redirect, get_object_or_404
-from spec_browse.models import Molecules, SumFormula
+from spec_browse.models import Molecules, SumFormula, Ion
 from django.core import serializers
 
 # Create your views here.
@@ -14,3 +14,7 @@ def mol_detail(request,pk):
 def sf_detail(request,pk):
     obj = get_object_or_404(SumFormula,pk=pk)
     return render(request, 'spec_browse/sf_detail.html', {'sf': obj})
+
+def ion_detail(request,pk):
+    ion = get_object_or_404(Ion, pk=pk)
+    return render(request, 'spec_browse/ion_detail.html', {'ion': ion})
